@@ -11,7 +11,7 @@
       <%= f.input :trial_period, collection: ["DAY","WEEK","MONTH"] %>
       <div class="text-center">
         <%= f.button :submit, "Create",
-         "data-toggle" => "tooltip", class: "btn btn-success" %>
+         "data-toggle" => "tooltip", class: "btn btn-success",  data: { "disable-with": "Loading .." } %>
       </div>
     </div>
   </div>

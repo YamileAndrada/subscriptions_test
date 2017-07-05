@@ -15,11 +15,11 @@
         </div>
         <div class="panel-footer text-center">
           <%= link_to raw("<img src='https://www.sandbox.paypal.com/en_US/i/btn/btn_subscribe_LG.gif' alt='PayPal - The safer, easier way to pay online!'>"),
-          new_subscription_path(plan: plan, client: @client) , data: { "disable-with": "..." } %>
+          new_subscription_path(plan: plan, client: @client) , data: { "disable-with": "Loading .." } %>
         </div>
       </div>
     </div>
   <% end %>
 </div>
 
-<%= link_to 'Create a plan', new_billing_plan_path %>
+<%= link_to 'Create a plan', new_billing_plan_path %><br>

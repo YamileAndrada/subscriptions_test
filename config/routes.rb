@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resources :clients
   resources :billing_plans
   resources :subscriptions
+  get 'client/subscriptions' => 'clients#subscriptions'
   get 'ConfirmSuscription' => 'subscriptions#execute'
   post 'paypal_webhook' => 'webhooks#paypal_webhook'
   post '/' => 'webhooks#paypal_webhook'

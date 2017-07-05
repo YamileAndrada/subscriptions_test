@@ -24,4 +24,8 @@ class ClientsController < ApplicationController
   private def client_params
     params.require(:client).permit(:first_name, :last_name, :street, :city, :state, :email, :postal_code, :country_code, :credit_card_id)
   end
+
+  def subscriptions
+    @client_subscriptions = Subscription.where(client_id: params[:client] )
+  end
 end

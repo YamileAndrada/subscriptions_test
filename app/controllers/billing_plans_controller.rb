@@ -36,7 +36,7 @@ class BillingPlansController < ApplicationController
 
           :merchant_preferences => {
               :setup_fee => {
-                  :value => "2.5",
+                  :value => "3",
                   :currency => "USD"
               },
               :return_url => "https://0b4bd5dd.ngrok.io/ConfirmSuscription",

@@ -34,9 +34,13 @@
       <td>
           <%= link_to 'Login', billing_plans_path(client: client) %>
       </td>
+      <td>
+          <%= link_to 'See all my subscriptions', client_subscriptions_path(client: client) %>
+      </td>
     <tr>
   <% end %>
 </table>
 
 
 <%= link_to 'Create a client', new_client_path %>
+<%= link_to 'Back', root_path %>

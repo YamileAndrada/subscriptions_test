@@ -1,41 +1,44 @@
-<script>
 
-
-
-</script>
+<%= javascript_include_tag 'subscription' %>
 
 <div class="container">
-<%= simple_form_for( @subscription, html: { class: 'container-fluid well horizontal-form', client: @client })  do |f| %>
+<%= simple_form_for( @subscription, html: { class: 'container-fluid well horizontal-form'})  do |f| %>
+  <%= f.hidden_field :plan_id %>
+  <%= hidden_field_tag :client, @client %>
+  <%= hidden_field_tag :plan, @plan %>
+
   <div class="row">
     <div class="col-xs-10 col-xs-offset-1 ">
       <p class="lead text-center">Subscription Creation</p>
-      <%= f.input :payment_method, as: :radio_buttons, collection: [['Paypal','paypal'],['Credit card','credit_card']] , wrapper: :vertical_radio_and_checkboxes,
-       default: "paypal"  %> <br>
-      <div id="credit_card_fields">
-        <% if @client_data.credit_card_id %>
-          <%= label_tag :card_type, "Pay with saved card  " %>
-          <%= @subscription.card_type %>
-          <%= @subscription.card_number %>
-        <% else %>
-          <%= f.input :card_type, collection: [['Visa', 'visa'], ['MasterCard', 'master'], ['Discover', 'discover'], ['American Express', 'american_express']], default: "discover" %>
-            <%= radio_button_tag :pay_with, :card, true %>
-            <%= label_tag :card_type do %>
-              <%= image_tag "visa.png" %>
-              <%= image_tag "mastercard.png" %>
-              <%= image_tag "discover.png" %>
-              <%= image_tag "american_express.png" %>
-              <%= image_tag "jcb.png" %>
-            <% end %>
-          <%= f.input :card_number %>
-          <%= f.input :card_verification %>
-          <%= f.input :card_expires_on, as: :date, order: [:day, :month, :year] %>
-        <% end %>
-      </div>
-      <%= f.hidden_field :plan_id %>
-      <%= hidden_field_tag :client, @client %>
-      <%= hidden_field_tag :plan, @plan %>
+        <%= label_tag :payment_method, "Select a Payment method" %>
+        <%= f.collection_radio_buttons(
+            :payment_method, [[:paypal, 'paypal'], [:credit_card, 'credit_card']], :first, :last, item_wrapper_tag: :div, checked: "paypal"
+          ) do |b|
+              if b.text == 'paypal'
+                b.label { b.radio_button + '  ' + image_tag("#{b.text}.png")}
+              else
+                b.label { b.radio_button + '  '+ image_tag("visa.png") +' '+ image_tag("mastercard.png")+ ' ' + image_tag("american_express.png")+ ' ' + image_tag("discover.png") }
+              end
+          end
+        %>
+        <div id="billing_fields">
+         <% if @client_data.credit_card_id %>
+          <br>
+            <%= label_tag :card_type, "Pay with saved card  " %>
+            <%= f.hidden_field :card_type %>
+            <%= image_tag "#{@subscription.card_type}.png" %>
+            <%= f.input :card_number, value: @subscription.card_number %>
+            <%= f.input :card_verification, value: @subscription.card_verification %>
+            <%= f.input :card_expires_on, as: :date, order: [:month, :year]%>
+          <% else %>
+            <%= f.input :card_type, collection: [['Visa', 'visa'], ['MasterCard', 'master'], ['Discover', 'discover'], ['American Express', 'american_express']], default: "discover" %>
+            <%= f.input :card_number %>
+            <%= f.input :card_verification %>
+            <%= f.input :card_expires_on, as: :date, order: [:month, :year] %>
+          <% end %>
+        </div>
       <div class="text-center">
-        <%= f.button :submit, "Subscribe Now", :method => :post, data: { "disable-with": "..." }, "data-toggle" => "tooltip", class: "btn btn-success" %>
+        <%= f.button :submit, "Subscribe Now", :method => :post, data: { "disable-with": "Loading .." }, "data-toggle" => "tooltip", class: "btn btn-success" %>
       </div>
     </div>
   </div>

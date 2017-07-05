@@ -5,18 +5,21 @@ class SubscriptionsController < ApplicationController
   end
   def new
     @subscription = Subscription.new
-    @plan = params[:plan]
-    @client = params[:client]
-    @client_data = Client.find(params[:client])
-    # @client_data.update_attribute(:credit_card_id, nil)
+    if params[:plan].nil? || params[:client].nil?
+      redirect_to clients_path
+    else
+      @plan = params[:plan]
+      @client = params[:client]
 
-    if @client_data.credit_card_id
-      @credit_card = CreditCard.find( @client_data.credit_card_id )
-      logger.info @credit_card
-      logger.info @subscription
-      @subscription.card_type = @credit_card.type
-      @subscription.card_number = @credit_card.number
-      @subscription.card_expires_on =  Date.new(@credit_card.expire_year, @credit_card.expire_month, 27)
+      @client_data = Client.find(params[:client])
+      # @client_data.update_attribute(:credit_card_id, nil)
+
+      if @client_data.credit_card_id
+        @credit_card = CreditCard.find( @client_data.credit_card_id )
+        @subscription.card_type = @credit_card.type
+        @subscription.card_number = @credit_card.number
+        @subscription.card_expires_on =  Date.new(@credit_card.expire_year, @credit_card.expire_month)
+      end
     end
   end
   def create
@@ -24,7 +27,7 @@ class SubscriptionsController < ApplicationController
     @client = Client.find(params[:client])
     @agreementAttributes = {
       :name => "Agreement for #{@plan.name}",
-      :description => "Agreement",
+      :description => "Agreement for #{@plan.name} Template creation  with start date #{Time.now.tomorrow.utc.iso8601}",
       :start_date => Time.now.tomorrow.utc.iso8601,
       :plan => {
         :id => @plan.plan_id
@@ -37,11 +40,11 @@ class SubscriptionsController < ApplicationController
         :country_code => @client.country_code
       }
     }
-
+    # 4012888888881881
     if params[:subscription][:payment_method] == "credit_card"
-      @payer = Payer.new()
-      logger.info "payer[#{@payer}] 88888888888888888888888888888888888888"
+
       if @client.credit_card_id.nil?
+        @credit_card_attributes =
         @credit_card = CreditCard.new({
           # ###CreditCard
           # A resource representing a credit card that can be
@@ -53,6 +56,7 @@ class SubscriptionsController < ApplicationController
           :cvv2 =>  params[:subscription][:card_verification],
           :first_name => @client.first_name,
           :last_name => @client.last_name,
+          :external_customer_id => @client.email,
             # ###Address
             # Base Address object used as shipping or billing
             # address in a payment. [Optional]
@@ -63,36 +67,72 @@ class SubscriptionsController < ApplicationController
             :postal_code => @client.postal_code,
             :country_code => @client.country_code
           }})
+      if @credit_card.create
+        @client.update_attribute(:credit_card_id, @credit_card.id)
+      end
+    end
 
-        if @credit_card.create
-          logger.info "CreditCard[#{@credit_card.id}] created successfully"
-          @client.update_attribute(:credit_card_id, @credit_card.id)
-          @agreementAttributes[:payer] = {
+      #   if @credit_card.create
+      #     debugger
+      #     logger.info "CreditCard[#{@credit_card.id}] created successfully"
+      #     @client.update_attribute(:credit_card_id, @credit_card.id)
+      #     @agreementAttributes[:payer] = {
+      #       :payer_info => {
+      #         :email => @client.email
+      #       },
+      #       :payment_method => 'credit_card',
+      #       :funding_instruments => [{
+      #         :credit_card_token => {
+      #           :credit_card_id => @credit_card.id,
+      #           :external_customer_id => @credit_card.external_customer_id
+      #         }
+      #     }]}
+      #   end
+      # else
+      #   @credit_card = CreditCard.find( @client.credit_card_id )
+      #   debugger
+      #   @agreementAttributes[:payer] = {
+      #       :payer_info => {
+      #         :email => @client.email
+      #       },
+      #       :payment_method => 'credit_card',
+      #       :funding_instruments => [{
+      #         :credit_card_token => {
+      #           :credit_card_id => @credit_card.id,
+      #           :external_customer_id => @credit_card.external_customer_id
+      #         }}
+      #       ]}
+      # end
+
+      @agreementAttributes[:payer] = {
             :payer_info => {
               :email => @client.email
             },
             :payment_method => 'credit_card',
             :funding_instruments => [{
-              :credit_card_token => {
-                :credit_card_id => @credit_card.id,
-                :payer_id => @payer.id
-              }
-          }]}
-        end
-      else
-        @credit_card = CreditCard.find( @client.credit_card_id )
-        debugger
-        @agreementAttributes[:payer] = {
-            :payer_info => {
-              :email => @client.email
-            },
-            :payment_method => 'credit_card',
-            :funding_instruments => [{
-              :credit_card_token => {
-                :credit_card_id => @credit_card.id
+              :credit_card => {
+                # ###CreditCard
+                # A resource representing a credit card that can be
+                # used to fund a payment.
+                :type => params[:subscription][:card_type],
+                :number => params[:subscription][:card_number],
+                :expire_month => params[:subscription]["card_expires_on(2i)"].to_i,
+                :expire_year => params[:subscription]["card_expires_on(1i)"].to_i,
+                :cvv2 =>  params[:subscription][:card_verification],
+                :first_name => @client.first_name,
+                :last_name => @client.last_name,
+                  # ###Address
+                  # Base Address object used as shipping or billing
+                  # address in a payment. [Optional]
+                :billing_address => {
+                  :line1 => @client.street,
+                  :city => @client.city,
+                  :state => @client.state,
+                  :postal_code => @client.postal_code,
+                  :country_code => @client.country_code
+                }
               }}
             ]}
-      end
     else
       @agreementAttributes[:payer_info] = {
           :email => @client.email
@@ -116,7 +156,6 @@ class SubscriptionsController < ApplicationController
         else
           # Credit card case no returns urls to approval directly the created object
           @subscription = Subscription.new(card_type: params[:subscription][:card_type], plan_id: @plan.plan_id, client_id: @client.id, agreement_id: @agreement.id, payment_method: params[:subscription][:payment_method] )
-          debugger
           @subscription.save
           redirect_to clients_path
         end
@@ -138,6 +177,18 @@ class SubscriptionsController < ApplicationController
     else
       logger.error  @agreement.error.inspect
     end
-    redirect_to clients_path
+    redirect_to clients_path, :notice => "Thank you for subscribing!"
   end
+
+  def destroy
+    debugger
+    @subscription = Subscription.find(params[:id])
+    @agreement = Agreement.find(@subscription[:agreement_id])
+    state_descriptor = AgreementStateDescriptor.new( :note => "Cancelling the agreement" )
+    if @agreement.cancel(state_descriptor)
+      @subscription.destroy
+    end
+    redirect_to subscriptions_path
+  end
+
 end
