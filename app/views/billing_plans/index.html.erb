@@ -1,0 +1,25 @@
+<div class= "container">
+<%= link_to 'back', clients_path, class: 'pull-right' %>
+<div class="row">
+  <% @billing_plans.each do |plan| %>
+    <div class="col-xs-6 col-sm-4 col-md-2">
+      <div class="panel panel-info">
+        <div class="panel-heading"><strong><%= plan.name %></strong>
+           <%= link_to 'X', billing_plan_path(plan), method: :delete, data: { confirm: 'Are you sure?' }, class: 'pull-right' %>
+        </div>
+
+        <div class="panel-body">
+          <p><%= plan.description %></p>
+          <span class="pull-right badge">$<%= plan.amount %></span>
+          <%= image_tag "logo_home.png", class: 'center-block', width: "40px", height: "40px" %>
+        </div>
+        <div class="panel-footer text-center">
+          <%= link_to raw("<img src='https://www.sandbox.paypal.com/en_US/i/btn/btn_subscribe_LG.gif' alt='PayPal - The safer, easier way to pay online!'>"),
+          new_subscription_path(plan: plan, client: @client) , data: { "disable-with": "..." } %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<%= link_to 'Create a plan', new_billing_plan_path %>

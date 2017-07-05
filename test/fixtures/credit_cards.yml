@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  card_type: MyString
+  card_verification: 1
+  card_expires_on: 2017-07-03
+  card_number: MyString
+
+two:
+  card_type: MyString
+  card_verification: 1
+  card_expires_on: 2017-07-03
+  card_number: MyString

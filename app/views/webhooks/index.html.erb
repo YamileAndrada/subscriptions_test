@@ -1,0 +1,37 @@
+<p>welcome to webhooks screen</p
+<br>
+
+<table>
+  <tr>
+      <th>details</th>
+      <th></th>
+  </tr>
+
+  <% @webhooks.each do |webhook| %>
+    <tr>
+      <td><%= webhook.id %></td>
+      <td>
+        <%= link_to 'Delete', webhook_path(id:webhook.id),
+                method: :delete,
+                data: { confirm: 'Are you sure?' } %>
+      </td>
+    </tr>
+  <% end %>
+</table>
+
+<table>
+  <tr>
+      <th>Recent events</th>
+      <th></th>
+      <th></th>
+      <th></th>
+  </tr>
+  <% @recentEvents.each do |event| %>
+    <tr>
+        <td><%= event.id %></td>
+        <td><%= event.event_type %></td>
+        <td><%= event.create_time %></td>
+       <td><%= event.summary %></td>
+    </tr>
+  <% end %>
+</table>

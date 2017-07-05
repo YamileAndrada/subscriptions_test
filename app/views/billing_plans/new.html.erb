@@ -1,0 +1,21 @@
+<div class="container">
+<%= simple_form_for( @billing_plan, html: { class: 'container-fluid well horizontal-form' } ) do |f| %>
+  <div class="row">
+    <div class="col-xs-10 col-xs-offset-1 ">
+      <p class="lead text-center">Subscription Creation</p>
+      <%= f.input :name %>
+      <%= f.input :description %>
+      <%= f.input :amount, label:"Monthly cost" %>
+      <%= f.input :currency, collection: ["USD"] %>
+      <%= f.input :trial %>
+      <%= f.input :trial_period, collection: ["DAY","WEEK","MONTH"] %>
+      <div class="text-center">
+        <%= f.button :submit, "Create",
+         "data-toggle" => "tooltip", class: "btn btn-success" %>
+      </div>
+    </div>
+  </div>
+<% end %>
+</div>
+
+

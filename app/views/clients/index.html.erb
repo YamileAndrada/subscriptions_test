@@ -1,0 +1,42 @@
+
+<div class= "container">
+
+
+<table class="table table-striped">
+    <tr>
+        <th>name</th>
+        <th>description</th>
+        <th>email</th>
+        <th>street</th>
+        <th></th>
+        <th></th>
+    </tr>
+  <% @clients.each do |client| %>
+    <tr>
+      <td>
+        <%= client.first_name %>
+      </td>
+      <td>
+        <%= client.country_code %>
+      </td>
+      <td>
+        <%= client.email %>
+      </td>
+      <td>
+        <%= client.street %>
+      </td>
+      <td>
+        <%= link_to 'Delete', client_path(client),
+              method: :delete,
+              data: { confirm: 'Are you sure?' } %>
+
+      </td>
+      <td>
+          <%= link_to 'Login', billing_plans_path(client: client) %>
+      </td>
+    <tr>
+  <% end %>
+</table>
+
+
+<%= link_to 'Create a client', new_client_path %>

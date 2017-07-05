@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  plan_id: MyString
+  payment_method: MyString
+  agreement_id: MyString
+  client_id: MyString
+  card_type: MyString
+  card_verification: 1
+  card_expires_on: 2017-07-04
+  card_number: MyString
+
+two:
+  plan_id: MyString
+  payment_method: MyString
+  agreement_id: MyString
+  client_id: MyString
+  card_type: MyString
+  card_verification: 1
+  card_expires_on: 2017-07-04
+  card_number: MyString

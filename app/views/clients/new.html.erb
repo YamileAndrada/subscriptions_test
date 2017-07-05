@@ -1,0 +1,21 @@
+<div class="container">
+<%= simple_form_for( @client, html: { class: 'container-fluid well horizontal-form' })  do |f| %>
+  <div class="row">
+    <div class="col-xs-10 col-xs-offset-1 ">
+      <p class="lead text-center">Subscription Creation</p>
+      <%= f.input :first_name %>
+      <%= f.input :last_name %>
+      <%= f.input :email, placeholder: 'Enter email' %>
+      <%= f.input :state, collection: [ "NK", "CA","OH"] %>
+      <%= f.input :city, placeholder: 'New york' %>
+      <%= f.input :street %>
+      <%= f.input :postal_code %>
+      <%= f.country_select :country_code, class: "dropdown" %>
+      <div class="text-center">
+        <%= f.button :submit, "Create", :method => :post, data: { "disable-with": "..." },
+         "data-toggle" => "tooltip", class: "btn btn-success" %>
+      </div>
+    </div>
+  </div>
+<% end %>
+</div>
